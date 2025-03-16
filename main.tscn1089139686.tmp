@@ -1,0 +1,35 @@
+[gd_scene load_steps=4 format=3 uid="uid://c42io37tft5k4"]
+
+[ext_resource type="Script" uid="uid://cocblu2ot8bd8" path="res://ascii_generator.gd" id="1_h2yge"]
+[ext_resource type="Texture2D" uid="uid://w83iorlocvpe" path="res://download (3).jpeg" id="3_lquwl"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_0xm2m"]
+
+[node name="Control" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_h2yge")
+palettes = 14
+
+[node name="TextureRect" type="TextureRect" parent="."]
+material = SubResource("ShaderMaterial_0xm2m")
+layout_mode = 0
+offset_left = 167.0
+offset_top = 186.0
+offset_right = 412.0
+offset_bottom = 498.0
+texture = ExtResource("3_lquwl")
+expand_mode = 1
+
+[node name="Button" type="Button" parent="."]
+layout_mode = 0
+offset_left = 483.0
+offset_top = 552.0
+offset_right = 722.0
+offset_bottom = 605.0
+theme_override_font_sizes/font_size = 32
+text = "Generate ASCII"

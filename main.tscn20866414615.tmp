@@ -1,0 +1,217 @@
+[gd_scene load_steps=10 format=3 uid="uid://c42io37tft5k4"]
+
+[ext_resource type="Script" uid="uid://cocblu2ot8bd8" path="res://ascii_generator.gd" id="1_h2yge"]
+[ext_resource type="FontFile" uid="uid://mkvpe1wd88na" path="res://Inconsolata_Condensed-Regular.ttf" id="2_0xm2m"]
+[ext_resource type="Shader" uid="uid://jgxu0wncg4r1" path="res://main.gdshader" id="3_7mycd"]
+[ext_resource type="Texture2D" uid="uid://cipefqkbcnq1x" path="res://Copy-32.png" id="3_h2yge"]
+[ext_resource type="Texture2D" uid="uid://w83iorlocvpe" path="res://download (3).jpeg" id="3_lquwl"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_0xm2m"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_272bh"]
+shader = ExtResource("3_7mycd")
+shader_parameter/outline_color = Color(1, 1, 1, 1)
+shader_parameter/thickness = 3.0
+shader_parameter/dash_length = 10.0
+shader_parameter/gap_length = 5.0
+shader_parameter/object_size = Vector2(100, 100)
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_0xm2m"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_1bvp3"]
+bg_color = Color(0.099986, 0.099986, 0.099986, 1)
+border_width_left = 10
+border_width_top = 10
+border_width_right = 10
+border_width_bottom = 10
+border_color = Color(0.0980392, 0.0980392, 0.0980392, 1)
+corner_radius_top_left = 6
+corner_radius_top_right = 6
+corner_radius_bottom_right = 6
+corner_radius_bottom_left = 6
+
+[node name="Control" type="Control" node_paths=PackedStringArray("generate_ascii_btn", "load_image_btn", "result_textbox", "grayscale_texture", "display_texture", "placeholder_texture", "option_btn", "reverse_palette_btn")]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_h2yge")
+palette_id = 1
+special_font_size = 6
+default_image_scale = Vector2(100, 40)
+special_image_scale = Vector2(40, 40)
+generate_ascii_btn = NodePath("BtnMarginContainer/CenterContainer/HBoxContainer/GenerateAsciiBtn")
+load_image_btn = NodePath("BtnMarginContainer/CenterContainer/HBoxContainer/LoadImageBtn")
+result_textbox = NodePath("MainMarginContainer/HBoxContainer/ResultLabel2")
+grayscale_texture = NodePath("GrayscaleTexture")
+display_texture = NodePath("MainMarginContainer/HBoxContainer/DisplayTexture")
+placeholder_texture = NodePath("MainMarginContainer/HBoxContainer/PlaceholderTexture")
+option_btn = NodePath("TopBar/HBoxContainer/HBoxContainer2/OptionButton")
+reverse_palette_btn = NodePath("TopBar/HBoxContainer/HBoxContainer3/ReversePaletteBtn")
+
+[node name="GrayscaleTexture" type="TextureRect" parent="."]
+visible = false
+material = SubResource("ShaderMaterial_0xm2m")
+layout_mode = 0
+offset_left = 167.0
+offset_top = 186.0
+offset_right = 412.0
+offset_bottom = 498.0
+expand_mode = 1
+
+[node name="MainMarginContainer" type="MarginContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 200
+theme_override_constants/margin_top = 100
+theme_override_constants/margin_right = 200
+theme_override_constants/margin_bottom = 150
+
+[node name="HBoxContainer" type="HBoxContainer" parent="MainMarginContainer"]
+layout_mode = 2
+
+[node name="DisplayTexture" type="TextureRect" parent="MainMarginContainer/HBoxContainer"]
+visible = false
+material = SubResource("ShaderMaterial_0xm2m")
+layout_mode = 2
+size_flags_horizontal = 3
+texture = ExtResource("3_lquwl")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="PlaceholderTexture" type="ColorRect" parent="MainMarginContainer/HBoxContainer"]
+material = SubResource("ShaderMaterial_272bh")
+custom_minimum_size = Vector2(350, 0)
+layout_mode = 2
+
+[node name="Label" type="Label" parent="MainMarginContainer/HBoxContainer/PlaceholderTexture"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -20.0
+offset_top = -11.5
+offset_right = 20.0
+offset_bottom = 11.5
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_font_sizes/font_size = 24
+text = "Load an Image"
+
+[node name="ResultLabel2" type="RichTextLabel" parent="MainMarginContainer/HBoxContainer"]
+z_index = 2
+layout_mode = 2
+size_flags_horizontal = 3
+focus_mode = 2
+mouse_default_cursor_shape = 1
+theme_override_fonts/mono_font = ExtResource("2_0xm2m")
+theme_override_font_sizes/mono_font_size = 8
+theme_override_styles/focus = SubResource("StyleBoxEmpty_0xm2m")
+theme_override_styles/normal = SubResource("StyleBoxFlat_1bvp3")
+bbcode_enabled = true
+fit_content = true
+scroll_active = false
+autowrap_mode = 0
+context_menu_enabled = true
+selection_enabled = true
+drag_and_drop_selection_enabled = false
+
+[node name="Copy-32" type="TextureRect" parent="MainMarginContainer/HBoxContainer/ResultLabel2"]
+layout_mode = 1
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -32.0
+offset_bottom = 32.0
+grow_horizontal = 0
+size_flags_horizontal = 8
+size_flags_vertical = 0
+texture = ExtResource("3_h2yge")
+
+[node name="BtnMarginContainer" type="MarginContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_bottom = 40
+
+[node name="CenterContainer" type="CenterContainer" parent="BtnMarginContainer"]
+layout_mode = 2
+size_flags_vertical = 8
+
+[node name="HBoxContainer" type="HBoxContainer" parent="BtnMarginContainer/CenterContainer"]
+layout_mode = 2
+size_flags_vertical = 8
+theme_override_constants/separation = 30
+
+[node name="GenerateAsciiBtn" type="Button" parent="BtnMarginContainer/CenterContainer/HBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 32
+text = "Generate ASCII"
+
+[node name="LoadImageBtn" type="Button" parent="BtnMarginContainer/CenterContainer/HBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 32
+text = "Load Image"
+
+[node name="TopBar" type="MarginContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme_override_constants/margin_left = 20
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 10
+
+[node name="HBoxContainer" type="HBoxContainer" parent="TopBar"]
+layout_mode = 2
+size_flags_horizontal = 0
+size_flags_vertical = 0
+mouse_filter = 2
+theme_override_constants/separation = 20
+
+[node name="HBoxContainer2" type="HBoxContainer" parent="TopBar/HBoxContainer"]
+layout_mode = 2
+mouse_filter = 2
+
+[node name="Label" type="Label" parent="TopBar/HBoxContainer/HBoxContainer2"]
+layout_mode = 2
+size_flags_horizontal = 0
+tooltip_text = "Select a palette for the ASCII art."
+mouse_filter = 0
+text = "Palette:"
+
+[node name="OptionButton" type="OptionButton" parent="TopBar/HBoxContainer/HBoxContainer2"]
+layout_mode = 2
+size_flags_horizontal = 0
+size_flags_vertical = 4
+
+[node name="HBoxContainer3" type="HBoxContainer" parent="TopBar/HBoxContainer"]
+layout_mode = 2
+mouse_filter = 2
+
+[node name="Label" type="Label" parent="TopBar/HBoxContainer/HBoxContainer3"]
+layout_mode = 2
+size_flags_horizontal = 0
+tooltip_text = "Reverses the palette. Need to Re-generate ASCII to see effects."
+mouse_filter = 0
+text = "Reverse Palette:"
+
+[node name="ReversePaletteBtn" type="CheckButton" parent="TopBar/HBoxContainer/HBoxContainer3"]
+layout_mode = 2
+size_flags_horizontal = 0
+size_flags_vertical = 4
