@@ -20,6 +20,8 @@ const grayscale_shader = preload("res://shaders/grayscale.gdshader")
             reverse_palette_btn.button_pressed = reverse_palette
 #endregion
 
+@export var show_preview: bool = false
+
 #region customizations
 # prefix "special" used for palettes that has emojis in it 
 @export_group("Customizations")
@@ -43,7 +45,10 @@ const grayscale_shader = preload("res://shaders/grayscale.gdshader")
 @export var reverse_palette_btn: CheckButton
 #endregion
 
+# load scripts
 var ascii_palette = ASCIIPalette.new()
+var ascii = ASCII.new()
+
 var selected_palette: String # the actual palette in string format
 var palette_name: String = ascii_palette.get_palette_name(palette_id)
 var image_format: Image.Format = Image.FORMAT_L8
@@ -52,8 +57,7 @@ var output: String:
     set(value):
         output = value
         display_ascii()
-var ascii = ASCII.new()
-var generate_ascii: Callable = func(): output = ascii.generate_ascii({"name": palette_name, "value": selected_palette},reverse_palette)
+var generate_ascii: Callable = func(): output = ascii.generate_ascii(get_image(grayscale_texture_rect), {"name": palette_name, "value": selected_palette}, grayscale_texture_rect, reverse_palette)
 
 func _ready() -> void:
     setup_environment()
@@ -65,16 +69,16 @@ func setup_environment() -> void:
     sync_ui_with_editor()
     # actual setting - setting these here so that it looks good in the main scene (main scene using dummy settings to look good in editor)
     grayscale_texture_rect.set_visible(false)
+    display_texture_rect.set_visible(false)
+
     result_label.set_v_size_flags(Control.SIZE_SHRINK_BEGIN)
     result_label.set_stretch_ratio(1.0)
     result_label.set_v_size_flags(Control.SIZE_SHRINK_CENTER)
-    
-    display_texture_rect.set_visible(false)
     result_label.set_modulate(Color(result_label.get_modulate(), 0.0))
-    apply_grayscale_shader(grayscale_texture_rect)
+    # apply_grayscale_shader(grayscale_texture_rect)
 
 func init_option_button() -> void:
-    # populate palette otion btn
+    # populate palette option btn
     var palette_array: Array = ASCIIPalette.Palettes.keys()
     for p in palette_array:
         palette_option_btn.add_item(p)
@@ -84,8 +88,9 @@ func connect_signals() -> void:
     generate_ascii_btn.pressed.connect(generate_ascii)
     load_image_btn.pressed.connect(open_native_file_dialog)
     selected_palette = ascii_palette.get_palette(palette_id)
-    palette_option_btn.item_selected.connect(palette_option_changed)
-    reverse_palette_btn.toggled.connect(toggle_reverse)
+    palette_option_btn.item_selected.connect(on_palette_option_changed)
+    reverse_palette_btn.toggled.connect(on_toggle_reverse)
+    ascii.image_rescaled.connect(apply_texture.bind(grayscale_texture_rect))
     #image_format_option_btn.item_selected.connect(on_image_format_change)
 
 func sync_ui_with_editor() -> void:
@@ -94,11 +99,11 @@ func sync_ui_with_editor() -> void:
 #endregion
 
 #region click handlers
-func palette_option_changed(id: int) -> void:
+func on_palette_option_changed(id: int) -> void:
     selected_palette = ascii_palette.get_palette(id)
     palette_name = ascii_palette.get_palette_name(id)
 
-func toggle_reverse(value: bool) -> void:
+func on_toggle_reverse(value: bool) -> void:
     reverse_palette = value
   
 func open_native_file_dialog() -> void:
@@ -133,30 +138,31 @@ func open_native_file_dialog() -> void:
 
 func on_image_loaded(dict: Dictionary) -> void:
     var texture = dict.texture
-    var image = dict.image
+    # convert to selected image format
+    var new_texture = ascii.convert_image_texture(image_format)
     
     # apply texture
-    grayscale_texture_rect.set_texture(texture)
+    grayscale_texture_rect.set_texture(new_texture)
     display_texture_rect.set_texture(texture)
     
     # hide placeholder rect if visible
     if placeholder_texture_rect:
         placeholder_texture_rect.set_visible(false)
-        display_texture_rect.set_visible(true)
-    convert_image_texture(image, image_format)
+        grayscale_texture_rect.set_visible(show_preview)
+        display_texture_rect.set_visible(not show_preview)
     await get_tree().create_timer(0.5).timeout
     load_btn_clicked = false
 
 #func on_image_format_change(id: int) -> void:
     #image_format = ASCIIPalette.Image_Format[image_format_option_btn.get_item_text(id)]
 
-func apply_grayscale_shader(texture: Variant) -> void:
+func apply_grayscale_shader(actor: Variant) -> void:
     var shader_mat: ShaderMaterial = ShaderMaterial.new()
     shader_mat.set_shader(grayscale_shader)
-    texture.material = shader_mat
+    actor.material = shader_mat
 
-func convert_image_texture(image: Image, new_format: Image.Format) -> void:
-    image.convert(new_format)
+func apply_texture(texture: ImageTexture, rect: TextureRect) -> void:
+    rect.set_texture(texture)
 
 func display_ascii() -> void:
     result_label.clear()
@@ -165,6 +171,8 @@ func display_ascii() -> void:
     result_label.set_modulate(Color(result_label.get_modulate(), 1.0))
 
 func update_font_size(output_label: RichTextLabel, _is_special_palette: bool, _default_font_size: int = 8, _special_font_size: int = 4) -> void:
-    print(_is_special_palette, palette_name)
     var new_font_size: int = _default_font_size if not _is_special_palette else _special_font_size
     output_label.add_theme_font_size_override("mono_font_size", new_font_size)
+
+func get_image(rect: TextureRect) -> Image:
+    return rect.texture.get_image()
